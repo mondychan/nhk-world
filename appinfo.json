@@ -1,0 +1,12 @@
+{
+  "id": "org.mondy.nhkworld",
+  "version": "1.0.0",
+  "vendor": "Local",
+  "type": "web",
+  "main": "index.html",
+  "title": "NHK World",
+  "icon": "icon.png",
+  "largeIcon": "icon.png",
+  "appDescription": "NHK WORLD-JAPAN live stream",
+  "resolution": "1920x1080"
+}

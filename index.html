@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>NHK World</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;color:#fff;font-family:Arial,sans-serif}#v{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}#panel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:rgba(0,0,0,.76);text-align:center;padding:40px}#panel.hidden{display:none}h1{font-size:42px;margin:0;letter-spacing:.04em}p{font-size:22px;margin:0;color:#ddd}.actions{display:flex;gap:20px;margin-top:12px}button,a{font:600 22px Arial,sans-serif;color:#fff;background:#b5121b;border:0;border-radius:6px;padding:18px 30px;text-decoration:none}button:focus,a:focus{outline:4px solid #fff;outline-offset:4px}#status{font-size:18px;color:#bbb;min-height:26px}
+</style>
+</head>
+<body>
+<video id="v" autoplay playsinline controls></video>
+<div id="panel">
+  <h1>NHK WORLD-JAPAN</h1>
+  <p id="message">Connecting to the official live stream…</p>
+  <div class="actions">
+    <button id="play" type="button">Play / retry</button>
+    <a id="site" href="https://www3.nhk.or.jp/nhkworld/en/live_tv/">Open NHK live page</a>
+  </div>
+  <div id="status"></div>
+</div>
+<script>
+(function(){
+  var stream='https://masterpl.hls.nhkworld.jp/hls/w/live/master.m3u8';
+  var video=document.getElementById('v');
+  var panel=document.getElementById('panel');
+  var message=document.getElementById('message');
+  var status=document.getElementById('status');
+  var timer=null;
+  function showPanel(text){message.textContent=text;panel.className='';document.getElementById('play').focus();}
+  function start(){
+    if(timer){clearTimeout(timer);timer=null;}
+    message.textContent='Connecting to the official live stream…';
+    status.textContent='';
+    panel.className='';
+    video.src=stream;
+    try{
+      var result=video.play();
+      if(result&&result.catch){result.catch(function(){showPanel('Press OK to start the live stream.');});}
+    }catch(e){showPanel('Press OK to start the live stream.');}
+    timer=setTimeout(function(){if(video.paused||video.readyState<2){showPanel('If playback did not start, press OK to try again.');}},12000);
+  }
+  video.addEventListener('playing',function(){if(timer){clearTimeout(timer);timer=null;}panel.className='hidden';});
+  video.addEventListener('error',function(){if(timer){clearTimeout(timer);timer=null;}showPanel('The stream did not start. Try again or open NHK’s live page.');});
+  video.addEventListener('waiting',function(){status.textContent='Buffering…';});
+  video.addEventListener('playing',function(){status.textContent='';});
+  document.getElementById('play').addEventListener('click',start);
+  document.getElementById('site').addEventListener('click',function(e){e.preventDefault();window.location.href=this.href;});
+  start();
+})();
+</script>
+</body>
+</html>
